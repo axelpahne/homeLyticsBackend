@@ -15,6 +15,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add an password'],
     },
+    household: {
+      type: String,
+      required: [false, 'Please add a household'],
+    },
   },
   {
     timestamps: true,

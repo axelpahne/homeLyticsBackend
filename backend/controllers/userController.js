@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const Household = require('../models/householdModel');
+const { getHousehold } = require('./householdController');
 
 // @desc    Register new users
 // @route   POST /api/users
@@ -54,13 +56,21 @@ const loginUser = asyncHandler(async (req, res) => {
 
   //Chek for user email
   const user = await User.findOne({ email });
+  let isEmpty = true;
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    const household = await Household.find({ user: user.id });
+
+    if (household.length != 0) {
+      isEmpty = false;
+    }
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
+      household: isEmpty,
     });
   } else {
     res.status(400);
